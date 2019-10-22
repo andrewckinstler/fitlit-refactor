@@ -51,19 +51,19 @@ $('#user-sleep-by-week').text(sleep.returnSleepByWeek(user.id, currentDate));
 $('#user-sleep-quality-by-week').text(sleep.returnSleepQualityByWeek(user.id, currentDate));
 $('#user-average-sleep-quality').text(sleep.returnAverageSleepQuality(user.id));
 $('#user-average-hours-slept').text(sleep.returnAverageSleep(user.id));
-$('#user-current-step-count').text(activity.returnNumberOfStepsByDate(user.id, currentDate));
+$('#user-current-step-count').text(activity.returnActivityByDate(user.id, currentDate, 'numSteps'));
 $('#user-rested').text(displaySleepStatus());
-$('#user-current-mins-active').text(activity.returnActiveMinutesByDate(user.id, currentDate));
+$('#user-current-mins-active').text(activity.returnActivityByDate(user.id, currentDate, 'minutesActive'));
 $('#user-current-miles-walked').text(activity.returnMilesWalkedByDate(user, currentDate));
-$('#user-current-step-count-vs-average').text(activity.returnNumberOfStepsByDate(user.id, currentDate));
-$('#all-users-average-step-count').text(activity.returnAvgStepsTakenAllUsersByDate(currentDate));
-$('#user-current-stairs-climbed').text(activity.returnStairsClimbedByDate(user.id, currentDate));
-$('#all-users-average-stairs-climbed').text(activity.returnAvgStairsClimbedAllUsersByDate(currentDate));
-$('#user-current-active-mins').text(activity.returnActiveMinutesByDate(user.id, currentDate));
-$('#all-users-average-active-mins').text(activity.returnAvgActiveMinutesAllUsersByDate(currentDate));
-$('#user-step-count-by-week').text(activity.returnNumberOfStepsByWeek(user.id, currentDate))
-$('#user-stairs-climbed-by-week').text(activity.returnStairsClimbedByWeek(user.id, currentDate))
-$('#user-mins-active-by-week').text(activity.returnActiveMinutesByWeek(user.id, currentDate))
+$('#user-current-step-count-vs-average').text(activity.returnActivityByDate(user.id, currentDate, 'numSteps'));
+$('#all-users-average-step-count').text(activity.returnUserAvgsByDate(currentDate, 'numSteps'));
+$('#user-current-stairs-climbed').text(activity.returnActivityByDate(user.id, currentDate, 'flightsOfStairs'));
+$('#all-users-average-stairs-climbed').text(activity.returnUserAvgsByDate(currentDate, 'flightsOfStairs'));
+$('#user-current-active-mins').text(activity.returnActivityByDate(user.id, currentDate, 'minutesActive'));
+$('#all-users-average-active-mins').text(activity.returnUserAvgsByDate(currentDate, 'minutesActive'));
+$('#user-step-count-by-week').text(activity.returnUserActivityByWeek(user.id, currentDate, 'numSteps'))
+$('#user-stairs-climbed-by-week').text(activity.returnUserActivityByWeek(user.id, currentDate, 'flightsOfStairs'))
+$('#user-mins-active-by-week').text(activity.returnUserActivityByWeek(user.id, currentDate, 'minutesActive'))
 $('#winner-name').text(returnFriendChallengeWinner(friendNames))
 $('#user-water-trend-week').text(displayWaterStatus());
 $('#republic-plaza-challenge').text(activity.republicPlazaChallenge(user.id))
@@ -101,7 +101,7 @@ function populateFriends(userFriends) {
     return ({
       id: userFriend.id, 
       name: userFriend.returnUserFirstName(),
-      steps: (activity.returnNumberOfStepsByWeek(userFriend.id, currentDate)).reduce((acc, day) => acc += day)})
+      steps: (activity.returnUserActivityByWeek(userFriend.id, currentDate, 'numSteps')).reduce((acc, day) => acc += day)})
   });
   friends.push(populateUserDataForFriendChallenge());
   return friends.sort((userA, userB) => userB.steps - userA.steps);
@@ -111,7 +111,7 @@ function populateUserDataForFriendChallenge() {
   return {
     id: user.id,
     name: newUser.returnUserFirstName(),
-    steps: activity.returnNumberOfStepsByWeek(user.id,currentDate)
+    steps: activity.returnUserActivityByWeek(user.id, currentDate, 'numSteps')
       .reduce((acc, day) => acc += day)
   }
 }
@@ -250,7 +250,7 @@ var stepsByWeek = new Chart(ctx, {
     labels: returnDatesOfWeek(user.id, currentDate),
     datasets: [{
       label: 'steps',
-      data: activity.returnNumberOfStepsByWeek(user.id, currentDate),
+      data: activity.returnUserActivityByWeek(user.id, currentDate, 'numSteps'),
       backgroundColor: [
         'rgba(221, 160, 221, 0.2)',
       ],
@@ -287,7 +287,7 @@ var activityByWeek = new Chart(ctx, {
     labels: returnDatesOfWeek(user.id, currentDate),
     datasets: [{
       label: 'active minutes',
-      data: activity.returnActiveMinutesByWeek(user.id, currentDate),
+      data: activity.returnUserActivityByWeek(user.id, currentDate, 'minutesActive'),
       backgroundColor: [
         'rgb(221, 160, 221, 0.2)',
       ],
@@ -323,7 +323,7 @@ var stairsByWeek = new Chart(ctx, {
     labels: returnDatesOfWeek(user.id, currentDate),
     datasets: [{
       label: 'stairs climbed',
-      data: activity.returnStairsClimbedByWeek(user.id, currentDate),
+      data: activity.returnUserActivityByWeek(user.id, currentDate, 'flightsOfStairs'),
       backgroundColor: [
         'rgb(221, 160, 221, 0.2)',
       ],
